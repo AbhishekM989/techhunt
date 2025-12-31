@@ -62,18 +62,37 @@ function login() {
   load();
 }
 
-function load() {
-  fetch(`${API}?teamID=${teamID}`)
-    .then(r=>r.json())
-    .then(d=>{
-      if(d.error){ alert("Invalid Team"); localStorage.clear(); return; }
-      document.getElementById("box").innerHTML =
-        `<h3>Level ${d.level}</h3>
-         <p>${d.question}</p>
-         <input id="ans">
-         <button onclick="submit()">Submit</button>`;
+function loadQuestion() {
+  fetch(`${API}?teamID=${teamID}${getQRParam()}`)
+    .then(res => res.json())
+    .then(data => {
+
+      // 🚫 QR NOT SCANNED YET
+      if (data.locked) {
+        box.innerHTML = `
+          <h3>Locked</h3>
+          <p>${data.message}</p>
+        `;
+        return;
+      }
+
+      // ❌ Invalid team
+      if (data.error) {
+        alert("Invalid Team ID");
+        localStorage.clear();
+        return;
+      }
+
+      // ✅ Normal question flow
+      box.innerHTML = `
+        <h3>Level ${data.level}</h3>
+        <p>${data.question}</p>
+        <input id="answer" placeholder="Your answer">
+        <button onclick="submitAnswer()">Submit</button>
+      `;
     });
 }
+
 
 function submit() {
   const a = document.getElementById("ans").value;
