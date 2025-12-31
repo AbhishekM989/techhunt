@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body {
+  background: linear-gradient(120deg,#0f2027,#203a43,#2c5364);
+  font-family: sans-serif;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.glass {
+  backdrop-filter: blur(15px);
+  background: rgba(255,255,255,0.15);
+  padding:30px;
+  border-radius:15px;
+  width:300px;
+}
+input,button {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border:none;
+  border-radius:8px;
+}
+.popup {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  display:none;
+  justify-content:center;
+  align-items:center;
+}
+</style>
+</head>
+<body>
+
+<div class="glass" id="box">
+  <input id="teamID" placeholder="Team ID">
+  <button onclick="login()">Enter</button>
+</div>
+
+<div class="popup" id="popup">
+  <div class="glass">
+    <p id="clue"></p>
+    <button onclick="closePopup()">OK</button>
+  </div>
+</div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzEqcY9tdb17uZ44bzB0-f2ngYugSSLpRiiJteeo9RtxO8EZMMOIRng8p9R75p02pR-AQ/exec";
+let teamID = localStorage.getItem("teamID");
+
+if (teamID) load();
+
+function login() {
+  teamID = document.getElementById("teamID").value;
+  localStorage.setItem("teamID", teamID);
+  load();
+}
+
+function load() {
+  fetch(`${API}?teamID=${teamID}`)
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.error){ alert("Invalid Team"); localStorage.clear(); return; }
+      document.getElementById("box").innerHTML =
+        `<h3>Level ${d.level}</h3>
+         <p>${d.question}</p>
+         <input id="ans">
+         <button onclick="submit()">Submit</button>`;
+    });
+}
+
+function submit() {
+  const a = document.getElementById("ans").value;
+  fetch(`${API}?teamID=${teamID}&answer=${a}`)
+    .then(r=>r.json())
+    .then(d=>{
+      if(!d.correct){ alert("Wrong"); return; }
+      document.getElementById("clue").innerText = d.clue;
+      document.getElementById("popup").style.display="flex";
+    });
+}
+
+function closePopup() {
+  document.getElementById("popup").style.display="none";
+}
+</script>
+</body>
+</html>
