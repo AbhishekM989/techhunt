@@ -1,0 +1,15 @@
+const API_BASE = ""; // unused in mock mode
+
+// 🔧 MOCK TEAM DATABASE
+const MOCK_TEAMS = {
+  "TH-001": {
+    level: 1,
+    status: "UNSOLVED",
+    submitted_answer: null
+  },
+  "TH-002": {
+    level: 1,
+    status: "UNSOLVED",
+    submitted_answer: null
+  }
+};
