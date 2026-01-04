@@ -260,6 +260,19 @@ button:active {
 }
 
 /* ---------- MOBILE ---------- */
+@media (max-width: 768px) {
+  .glass-card {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    background: linear-gradient(
+      180deg,
+      rgba(59,130,246,0.18),
+      rgba(2,4,9,0.95)
+    );
+  }
+}
+
 @media (max-width: 480px) {
 
   body {
@@ -276,6 +289,14 @@ button:active {
     max-width: none;
     padding: 28px 22px;
     border-radius: 20px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+
+    background: linear-gradient(
+      180deg,
+      rgba(59,130,246,0.18),
+      rgba(2,4,9,0.95)
+    );
   }
 
   .title {
