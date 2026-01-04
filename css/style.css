@@ -1,0 +1,217 @@
+/* ---------- RESET ---------- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- BODY ---------- */
+body {
+  font-family: 'Inter', sans-serif;
+  height: 100vh;
+  background: radial-gradient(circle at top, #111827, #020617);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+/* ---------- CENTER ---------- */
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* ---------- GLASS CARD ---------- */
+.glass-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 36px;
+
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+
+  animation: fadeIn 0.8s ease;
+}
+
+/* ---------- TEXT ---------- */
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #b0b3c0;
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 28px;
+}
+
+/* ---------- INPUT ---------- */
+input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+
+  color: white;
+  font-size: 14px;
+
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+input::placeholder {
+  color: #9ca3af;
+}
+
+input:focus {
+  outline: none;
+  border: 1px solid #6ae3ff;
+  box-shadow: 0 0 0 2px rgba(106, 227, 255, 0.2);
+}
+
+/* ---------- BUTTON ---------- */
+button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+
+  background: #6ae3ff;
+  color: #020617;
+
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    opacity 0.15s ease;
+}
+
+button:hover {
+  opacity: 0.95;
+  box-shadow: 0 8px 20px rgba(106, 227, 255, 0.25);
+}
+
+button:active {
+  transform: scale(0.97);
+}
+
+/* ---------- MESSAGE ---------- */
+.message {
+  margin-top: 16px;
+  font-size: 13px;
+  text-align: center;
+  color: #ff6b6b;
+  min-height: 16px;
+  animation: shake 0.3s ease;
+}
+
+/* ---------- ANIMATIONS ---------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+
+/* =========================
+   RESPONSIVE BREAKPOINTS
+   ========================= */
+
+/* ---------- TABLET & SMALL LAPTOP ---------- */
+@media (max-width: 968px) {
+
+  .glass-card {
+    max-width: 520px;
+    padding: 32px 28px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+  }
+
+  input,
+  button {
+    font-size: 15px;
+  }
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 480px) {
+
+  body {
+    padding: 0;
+  }
+
+  .container {
+    align-items: flex-start;
+    padding-top: 60px;
+  }
+
+  .glass-card {
+    width: 100%;
+    max-width: none;
+    padding: 28px 22px;
+    border-radius: 20px;
+  }
+
+  .title {
+    font-size: 26px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    margin-bottom: 24px;
+  }
+
+  input {
+    padding: 16px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  button {
+    padding: 16px;
+    font-size: 15px;
+    border-radius: 14px;
+  }
+
+  .message {
+    font-size: 14px;
+  }
+}
+

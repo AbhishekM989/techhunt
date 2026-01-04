@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TechHunt Login</title>
+
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div class="container">
+    <div class="glass-card">
+
+      <h1 class="title">IIC-TechHunt</h1>
+      <p class="subtitle">Enter your Team ID to continue</p>
+
+      <input
+        type="text"
+        id="teamId"
+        placeholder="Team ID"
+        autocomplete="off"
+      />
+
+      <button onclick="login()">Continue</button>
+
+      <p id="msg" class="message"></p>
+
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>
