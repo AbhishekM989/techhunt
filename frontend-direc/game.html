@@ -9,9 +9,9 @@
 
   <!-- Inter Font -->
   <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"> -->
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="./css/style.css" />
 </head>
-<div id="levelCompletedOverlay" class="overlay hidden">
+<!-- <div id="levelCompletedOverlay" class="overlay hidden">
   <div class="glass-popup">
     <div class="check-icon">✔</div>
     <h3>Level Completed</h3>
@@ -22,7 +22,7 @@
       <button class="popup-btn" onclick="closeLevelPopup()">OK</button>
     </p>
   </div>
-</div>
+</div> -->
 
 <body>
     <canvas id="binaryCanvas"></canvas>
@@ -34,23 +34,27 @@
       <h2 class="question" id="questionText">
         Loading question…
       </h2>
+      <div id="clue"></div>
+      <div id="message"></div>
 
       <input
         type="text"
-        id="answerInput"
+        id="answer"
         placeholder="Type your answer"
         autocomplete="off"
       />
 
-      <button id="submitBtn" onclick="submitAnswer()">Submit</button>
+      <button id="submitBtn" type="button">Submit</button>
+      <button id="testQRBtn" type="button">TEST QR (DEV)</button>
 
       <p class="status" id="statusMsg"></p>
 
     </div>
   </div>
 
-  <script src="js/config.js"></script>
-  <script src="js/game.js"></script>
-  <script src="js/binary.js"></script>
+  <script src="./js/config.js"></script>
+  <!-- <script src="./js/game.js"></script> -->
+   <script src="./js/app.js"></script>
+  <script src="./js/binary.js"></script>
 </body>
 </html>

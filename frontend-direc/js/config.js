@@ -1,0 +1,16 @@
+const API_BASE = "http://127.0.0.1:8000";
+; // unused in mock mode
+
+// 🔧 MOCK TEAM DATABASE
+// const MOCK_TEAMS = {
+//   "TH-001": {
+//     level: 1,
+//     status: "UNSOLVED",
+//     submitted_answer: null
+//   },
+//   "TH-002": {
+//     level: 1,
+//     status: "UNSOLVED",
+//     submitted_answer: null
+//   }
+// };

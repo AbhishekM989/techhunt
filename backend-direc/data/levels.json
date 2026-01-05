@@ -1,0 +1,29 @@
+{
+  "1": {
+    "question": "2 + 2 = ?",
+    "answer": "4",
+    "hints": {
+      "3": "Basic math",
+      "5": "Single digit"
+    },
+    "next_qr_clue": "Go where books are silent"
+  },
+  "2": {
+    "question": "Binary of 5?",
+    "answer": "101",
+    "hints": {
+      "3": "Uses only 0 and 1",
+      "5": "Starts with 1"
+    },
+    "next_qr_clue": "Where wires meet minds"
+  },
+  "3": {
+    "question": "Capital of India?",
+    "answer": "delhi",
+    "hints": {
+      "3": "Political center",
+      "5": "Starts with D"
+    },
+    "next_qr_clue": "Endgame zone"
+  }
+}
