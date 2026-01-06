@@ -13,6 +13,8 @@ document.addEventListener("visibilitychange", () => {
 
 
 
+const params = new URLSearchParams(window.location.search);
+const scanLevel = params.get("scan");
 const teamId = localStorage.getItem("team_id");
 
 
@@ -22,7 +24,6 @@ if (scanLevel && !teamId) {
 
   
   window.location.replace("index.html");
-  throw new Error("Redirecting to login for QR resume");
 }
 
 
