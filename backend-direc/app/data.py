@@ -8,3 +8,6 @@ def load_levels():
 
 def normalize(ans: str) -> str:
     return ans.strip().lower()
+
+def check_answer(user_answer: str, correct_answer: str) -> bool:
+    return normalize(user_answer) == normalize(correct_answer)

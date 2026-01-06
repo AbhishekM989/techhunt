@@ -1,13 +1,14 @@
 from fastapi import FastAPI, HTTPException
+from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
-from app.storage import load_teams, save_teams, get_or_create_team
-from app.data import load_levels, normalize
-from datetime import datetime
-from app.models import LoginRequest
-from app.models import SubmitAnswerRequest
 
-app = FastAPI()
+from app.storage import load_teams, save_teams
+from app.data import check_answer
+import json
 
+LEVEL_FILE = "data/levels.json"
+
+app = FastAPI(title="TechHunt JSON Backend")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -15,131 +16,182 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-levels = load_levels()
-
-# ---------------- LOGIN ----------------
-
+def load_levels():
+    with open(LEVEL_FILE, "r") as f:
+        return json.load(f)
 
 @app.post("/login")
-def login(payload: LoginRequest):
+def login(team_id: str):
     teams = load_teams()
-    team_id = payload.team_id
 
     if team_id not in teams:
-        teams[team_id] = {
-            "current_level": 1,
-            "qr_unlocked_level": 1, 
-            "levels": {}
-        }
-        save_teams(teams)
+        raise HTTPException(status_code=401, detail="Invalid Team ID")
 
-    return {
-        "status": "ok",
-        "current_level": teams[team_id]["current_level"]
-    }
+    team = teams[team_id]
 
+    if team["start_time"] is None:
+        team["start_time"] = datetime.now(timezone.utc).isoformat()
+        team["current_level"] = 1
+        team["qr_unlocked"] = True
 
-# ---------------- GET CURRENT LEVEL ----------------
-@app.get("/level/{team_id}")
+    save_teams(teams)
+
+    return {"status": "ok", "current_level": team["current_level"]}
+
+@app.get("/level")
 def get_level(team_id: str):
     teams = load_teams()
+    levels = load_levels()
 
     if team_id not in teams:
-        raise HTTPException(404, "Invalid team")
+        raise HTTPException(status_code=401, detail="Invalid Team ID")
 
     team = teams[team_id]
     level = str(team["current_level"])
 
-    # 🔒 QR gate (ONLY for level ≥ 2)
-    if team["current_level"] > team["qr_unlocked_level"]:
-        raise HTTPException(403, "Scan QR to unlock this level")
+    if level == "1":
+        team["qr_unlocked"] = True
 
-    if level not in team["levels"]:
-        team["levels"][level] = {
-            "attempts": 0,
-            "answered": False,
-            "hints": []
-        }
+    if team["is_finished"]:
+        return {"status": "finished"}
+
+    if team["qr_unlocked"]:
+        level_data = levels[level]
+        questions = level_data["questions"]
+
+    team.setdefault("question_map", {})
+
+    if level not in team["question_map"]:
+        import random
+        q_index = random.randint(0, len(questions) - 1)
+        team["question_map"][level] = q_index
         save_teams(teams)
+    else:
+        q_index = team["question_map"][level]
+
+    question_obj = questions[q_index]
 
     return {
+        "status": "active",
         "level": level,
-        "question": levels[level]["question"],
-        "hints": team["levels"][level]["hints"]
+        "question": question_obj["question"],
+        "clue": level_data.get("clue")
     }
+    prev_level = str(int(level) - 1)
+    clue = None
+    if prev_level in levels:
+        clue = levels[prev_level].get("clue")
 
-
-# ---------------- SUBMIT ANSWER ----------------
-@app.post("/submit-answer")
-def submit_answer(payload: SubmitAnswerRequest):
-    team_id = payload.team_id
-    answer = payload.answer
-
-    teams = load_teams()
-    team = teams.get(team_id)
-
-    if not team:
-        raise HTTPException(404, "Invalid team")
-
-    lvl = str(team["current_level"])
-    state = team["levels"].get(lvl)
-
-    if not state:
-        raise HTTPException(400, "Level not initialized")
-
-    # already answered
-    if state["answered"]:
-        return {
-            "status": "already_completed",
-            "next_qr_clue": levels[lvl]["next_qr_clue"]
-        }
-
-    state["attempts"] += 1
-
-    # hint logic
-    for k, hint in levels[lvl]["hints"].items():
-        if state["attempts"] >= int(k) and hint not in state["hints"]:
-            state["hints"].append(hint)
-
-    # check answer
-    if normalize(answer) == normalize(levels[lvl]["answer"]):
-        state["answered"] = True
-        team["current_level"] += 1
-        save_teams(teams)
-
-        return {
-            "status": "correct",
-            "next_qr_clue": levels[lvl]["next_qr_clue"]
-        }
-
-    save_teams(teams)
     return {
-        "status": "wrong",
-        "attempts": state["attempts"],
-        "hints": state["hints"]
+        "status": "locked",
+        "level": level,
+        "clue": clue
     }
 
-@app.post("/verify-qr")
-def verify_qr(team_id: str, level: int):
+    data = levels[level]
+    return {
+        "status": "active",
+        "level": level,
+        "question": data["question"],
+        "clue": data.get("clue")
+    }
+
+@app.post("/scan-qr")
+def scan_qr(team_id: str, level: int):
     teams = load_teams()
+    level = str(level)
 
     if team_id not in teams:
-        raise HTTPException(404, "Invalid team")
+        raise HTTPException(status_code=401, detail="Invalid Team ID")
 
     team = teams[team_id]
 
-    # QR must be for CURRENT level only
-    if level != team["current_level"]:
-        raise HTTPException(403, "Invalid QR for this level")
+    if str(team["current_level"]) != level:
+        raise HTTPException(status_code=403, detail="Wrong QR")
 
-    team["qr_unlocked_level"] = level
+    team["qr_unlocked"] = True
+    save_teams(teams)
+
+    return {"status": "unlocked"}
+
+@app.post("/submit-answer")
+def submit_answer(team_id: str, answer: str):
+    teams = load_teams()
+    levels = load_levels()
+
+    if team_id not in teams:
+        raise HTTPException(status_code=401, detail="Invalid Team ID")
+
+    team = teams[team_id]
+    level = str(team["current_level"])
+
+    # Safety checks
+    if team["is_finished"]:
+        return {"status": "finished"}
+
+    if not team["qr_unlocked"]:
+        raise HTTPException(status_code=403, detail="Level locked")
+
+    # Get team-specific question
+    q_index = team["question_map"][level]
+    correct_answer = levels[level]["questions"][q_index]["answer"]
+
+    # Initialize tracking
+    team["attempts"].setdefault(level, 0)
+    team["hints_used"].setdefault(level, False)
+
+    # ✅ CORRECT ANSWER
+    if check_answer(answer, correct_answer):
+
+        team["last_clue"] = levels[level].get("clue")
+        team["qr_unlocked"] = False
+        team["current_level"] += 1
+
+        if str(team["current_level"]) not in levels:
+            team["is_finished"] = True
+            team["end_time"] = datetime.now(timezone.utc).isoformat()
+            save_teams(teams)
+            return {"status": "finished"}
+
+        save_teams(teams)
+        return {
+            "status": "correct",
+            "next_clue": team["last_clue"]
+        }
+
+    # ❌ WRONG ANSWER
+    team["attempts"][level] += 1
+    attempts = team["attempts"][level]
+
+    hint = None
+
+    # Unlock hint exactly on 3rd wrong attempt
+    if attempts == 3:
+        team["hints_used"][level] = True
+        hint = levels[level].get("hint")
+
+    # Keep showing hint after unlock
+    elif team["hints_used"][level]:
+        hint = levels[level].get("hint")
+
     save_teams(teams)
 
     return {
-        "status": "ok",
-        "unlocked_level": level
+        "status": "wrong",
+        "attempts": attempts,
+        "hint": hint
     }
+    team["qr_unlocked"] = False
+    team["current_level"] += 1
 
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    if str(team["current_level"]) not in levels:
+        team["is_finished"] = True
+        team["end_time"] = datetime.utcnow().isoformat()
+        save_teams(teams)
+        return {"status": "finished"}
+
+    save_teams(teams)
+    return {
+        "status": "correct",
+        "next_clue": levels[level]["clue"]
+    }
