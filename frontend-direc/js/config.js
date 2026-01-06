@@ -1,1 +1,1 @@
-const API_BASE = "https://techhunt-0zbm.onrender.com";
+const API_BASE = "https://techhunt-8gfx.onrender.com";
