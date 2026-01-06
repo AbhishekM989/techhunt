@@ -1,7 +1,7 @@
-// document.addEventListener("contextmenu", e => e.preventDefault());
-// document.addEventListener("copy", e => e.preventDefault());
-// document.addEventListener("cut", e => e.preventDefault());
-// document.addEventListener("paste", e => e.preventDefault());
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("copy", e => e.preventDefault());
+document.addEventListener("cut", e => e.preventDefault());
+document.addEventListener("paste", e => e.preventDefault());
 
 document.body.style.userSelect = "none";
 
