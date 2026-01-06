@@ -1,6 +1,8 @@
-if (sessionStorage.getItem("team_id")) {
+
+if (localStorage.getItem("team_id")) {
   window.location.replace("game.html");
 }
+
 
 async function login() {
   const teamIdInput = document.getElementById("teamId");
@@ -26,13 +28,22 @@ async function login() {
       return;
     }
 
-    console.log("✅ Login successful, redirecting…");
+    console.log("✅ Login successful");
 
-    sessionStorage.setItem("team_id", teamId);
-    window.location.replace("game.html");
+
+    localStorage.setItem("team_id", teamId);
+
+    const pendingScan = localStorage.getItem("pending_scan");
+
+    if (pendingScan) {
+      localStorage.removeItem("pending_scan");
+      window.location.replace(`game.html?scan=${pendingScan}`);
+    } else {
+      window.location.replace("game.html");
+    }
 
   } catch (err) {
     console.error(err);
-    errorEl.innerText = "Server not reachable";
+    msg.innerText = "Server not reachable";
   }
 }

@@ -11,17 +11,30 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-const teamId = sessionStorage.getItem("team_id");
 
-if (!teamId) {
-  window.location.replace = "index.html";
+
+const teamId = localStorage.getItem("team_id");
+
+
+if (scanLevel && !teamId) {
+  
+  localStorage.setItem("pending_scan", scanLevel);
+
+  
+  window.location.replace("index.html");
+  throw new Error("Redirecting to login for QR resume");
 }
 
-const params = new URLSearchParams(window.location.search);
-const scanLevel = params.get("scan");
 
-if (scanLevel) {
+if (!teamId) {
+  window.location.replace("index.html");
+  throw new Error("Not logged in");
+}
+
+
+if (scanLevel && teamId) {
   scanQR(scanLevel);
+
   window.history.replaceState({}, document.title, "game.html");
 }
 

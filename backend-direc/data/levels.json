@@ -28,5 +28,45 @@
   ],
   "hint": "Think logically",
   "clue": "Go"
+},
+"4": {
+  "questions": [
+    { "question": "2 + 2 = ?", "answer": "4" },
+    { "question": "Capital of India?", "answer": "delhi" },
+    { "question": "5 * 3 = ?", "answer": "15" },
+    { "question": "Binary of 4?", "answer": "100" }
+  ],
+  "hint": "Think logically",
+  "clue": "Go"
+},
+"5": {
+  "questions": [
+    { "question": "2 + 2 = ?", "answer": "4" },
+    { "question": "Capital of India?", "answer": "delhi" },
+    { "question": "5 * 3 = ?", "answer": "15" },
+    { "question": "Binary of 4?", "answer": "100" }
+  ],
+  "hint": "Think logically",
+  "clue": "Go"
+},
+"6": {
+  "questions": [
+    { "question": "2 + 2 = ?", "answer": "4" },
+    { "question": "Capital of India?", "answer": "delhi" },
+    { "question": "5 * 3 = ?", "answer": "15" },
+    { "question": "Binary of 4?", "answer": "100" }
+  ],
+  "hint": "Think logically",
+  "clue": "Go"
+},
+"7": {
+  "questions": [
+    { "question": "2 + 2 = ?", "answer": "4" },
+    { "question": "Capital of India?", "answer": "delhi" },
+    { "question": "5 * 3 = ?", "answer": "15" },
+    { "question": "Binary of 4?", "answer": "100" }
+  ],
+  "hint": "Think logically",
+  "clue": "Go"
 }
 }
