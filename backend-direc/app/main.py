@@ -49,15 +49,25 @@ def get_level(team_id: str):
     team = teams[team_id]
     level = str(team["current_level"])
 
+    
     if level == "1":
         team["qr_unlocked"] = True
 
+    
     if team["is_finished"]:
         return {"status": "finished"}
 
-    if team["qr_unlocked"]:
-        level_data = levels[level]
-        questions = level_data["questions"]
+    
+    if not team["qr_unlocked"]:
+        return {
+            "status": "locked",
+            "level": level,
+            "clue": team.get("last_clue")
+        }
+
+    
+    level_data = levels[level]
+    questions = level_data["questions"]
 
     team.setdefault("question_map", {})
 
@@ -76,24 +86,6 @@ def get_level(team_id: str):
         "level": level,
         "question": question_obj["question"],
         "clue": level_data.get("clue")
-    }
-    prev_level = str(int(level) - 1)
-    clue = None
-    if prev_level in levels:
-        clue = levels[prev_level].get("clue")
-
-    return {
-        "status": "locked",
-        "level": level,
-        "clue": clue
-    }
-
-    data = levels[level]
-    return {
-        "status": "active",
-        "level": level,
-        "question": data["question"],
-        "clue": data.get("clue")
     }
 
 @app.post("/scan-qr")
