@@ -7,20 +7,38 @@ document.addEventListener("paste", e => e.preventDefault());
 if (window.location.pathname.includes("game.html")) {
 
   let tabSwitchCount = Number(localStorage.getItem("tab_switches")) || 0;
+  let hiddenAt = null;
 
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      tabSwitchCount++;
-      localStorage.setItem("tab_switches", tabSwitchCount);
 
-      fetch(`${API_BASE}/admin/track-tab-switch`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          team_id: localStorage.getItem("team_id"),
-          count: tabSwitchCount
-        })
-      }).catch(() => {});
+    if (document.hidden) {
+      hiddenAt = Date.now();
+    } 
+    else {
+      // tab became visible again
+      if (!hiddenAt) return;
+
+      const timeAway = (Date.now() - hiddenAt) / 1000; // seconds
+      hiddenAt = null;
+
+      /*
+        COUNT ONLY IF:
+        - user returns within 15 seconds
+        - implies quick lookup / cheating
+      */
+      if (timeAway <= 15) {
+        tabSwitchCount++;
+        localStorage.setItem("tab_switches", tabSwitchCount);
+
+        fetch(`${API_BASE}/admin/track-tab-switch`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            team_id: localStorage.getItem("team_id"),
+            count: tabSwitchCount
+          })
+        }).catch(() => {});
+      }
     }
   });
 
