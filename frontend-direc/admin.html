@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>TechHunt Admin Console</title>
+  <link rel="icon" type="image/png" href="./img/IIC.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+
+<body>
+    <canvas id="binaryCanvas"></canvas>
+
+ 
+  <div class="admin-wrapper glass-card">
+
+    <header class="admin-header">
+      <h1>IIC-TechHunt Control Panel</h1>
+      <span class="live-indicator">● LIVE</span>
+      <span id="lastUpdated" class="last-updated">
+      Last updated: —
+    </span>
+    </header>
+
+    
+    <nav class="admin-tabs">
+      <button class="tab active">Dashboard</button>
+      <button class="tab">Export</button>
+    </nav>
+
+    
+    <section class="admin-section active">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Team ID</th>
+            <th>Level</th>
+            <th>Start (IST)</th>
+            <th>End (IST)</th>
+            <th>Attempts</th>
+            <th>Hints</th>
+            <th>Duration</th>
+            <th>Tab Switches</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="adminTable"></tbody>
+      </table>
+    </section>
+
+  </div>
+  <script src="js/config.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/binary.js"></script>
+  
+</body>
+</html>

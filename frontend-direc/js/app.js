@@ -3,13 +3,28 @@ document.addEventListener("copy", e => e.preventDefault());
 document.addEventListener("cut", e => e.preventDefault());
 document.addEventListener("paste", e => e.preventDefault());
 
-document.body.style.userSelect = "none";
 
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    console.warn("Tab switch detected");
-  }
-});
+if (window.location.pathname.includes("game.html")) {
+
+  let tabSwitchCount = Number(localStorage.getItem("tab_switches")) || 0;
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      tabSwitchCount++;
+      localStorage.setItem("tab_switches", tabSwitchCount);
+
+      fetch(`${API_BASE}/admin/track-tab-switch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          team_id: localStorage.getItem("team_id"),
+          count: tabSwitchCount
+        })
+      }).catch(() => {});
+    }
+  });
+
+}
 
 
 

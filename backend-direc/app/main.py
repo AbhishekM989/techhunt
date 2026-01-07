@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from app.admin import router as admin_router
 from datetime import datetime, timezone
 from fastapi.middleware.cors import CORSMiddleware
 import json
@@ -6,6 +7,9 @@ import random
 
 from app.storage import load_teams, save_teams
 from app.data import check_answer
+
+
+
 
 LEVEL_FILE = "data/levels.json"
 
@@ -17,6 +21,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
+app.include_router(admin_router)
 
 # ---------------- UTILS ----------------
 
@@ -68,7 +74,7 @@ def get_level(team_id: str):
     if team["is_finished"]:
         return {"status": "finished"}
 
-    # 🔒 LOCKED
+    #LOCKED
     if not team["qr_unlocked"]:
         return {
             "status": "locked",
@@ -76,7 +82,7 @@ def get_level(team_id: str):
             "clue": team.get("last_clue")
         }
 
-    # ✅ ACTIVE
+    #ACTIVE
     level_data = levels[level]
     questions = level_data["questions"]
 
@@ -146,7 +152,7 @@ def submit_answer(team_id: str, answer: str):
     team["attempts"].setdefault(level, 0)
     team["hints_used"].setdefault(level, False)
 
-    # ✅ CORRECT ANSWER
+    #CORRECT ANSWER
     if check_answer(answer, correct_answer):
         team["last_clue"] = levels[level].get("clue")
         team["qr_unlocked"] = False
@@ -164,7 +170,7 @@ def submit_answer(team_id: str, answer: str):
             "next_clue": team["last_clue"]
         }
 
-    # ❌ WRONG ANSWER
+    #WRONG ANSWER
     team["attempts"][level] += 1
     attempts = team["attempts"][level]
 

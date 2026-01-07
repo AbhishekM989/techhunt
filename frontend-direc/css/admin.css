@@ -1,0 +1,110 @@
+.admin-wrapper {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 30px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.live-indicator {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  background: rgba(0, 255, 180, 0.15);
+  color: #00ffb4;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-tabs .tab {
+  flex: 1;
+  padding: 10px;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  color: #ffff
+}
+
+.admin-tabs .tab.active {
+  box-shadow: 0 0 15px rgba(0, 150, 255, 0.6);
+}
+
+.admin-section {
+  display: none;
+}
+
+.admin-section.active {
+  display: block;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 14px;
+  text-align: center;
+}
+
+.admin-table th {
+  opacity: 0.7;
+}
+
+.admin-table tr:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+.muted-text {
+  opacity: 0.6;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.last-updated {
+  font-size: 12px;
+  color: rgba(200, 220, 255, 0.75);
+  font-weight: 500;
+  letter-spacing: 0.4px;
+}
+
+.live-indicator {
+  background: rgba(0, 255, 180, 0.15);
+  color: #00ffb4;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  box-shadow: 0 0 8px rgba(0, 255, 180, 0.6);
+  animation: livePulse 1.6s ease-in-out infinite;
+}
+
+
+@keyframes livePulse {
+  0% {
+    box-shadow: 0 0 6px rgba(0, 255, 180, 0.4);
+    opacity: 0.7;
+  }
+  50% {
+    box-shadow: 0 0 16px rgba(0, 255, 180, 0.9);
+    opacity: 1;
+  }
+  100% {
+    box-shadow: 0 0 6px rgba(0, 255, 180, 0.4);
+    opacity: 0.7;
+  }
+}
