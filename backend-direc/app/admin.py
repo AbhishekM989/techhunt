@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from app.storage import load_teams, save_teams
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from fastapi.responses import FileResponse
 import os
 
@@ -47,14 +47,24 @@ class TabSwitchPayload(BaseModel):
 
 
 @router.post("/track-tab-switch")
-def track_tab_switch(data: TabSwitchPayload):
+def track_tab_switch(payload: dict):
+    team_id = payload.get("team_id")
+
     teams = load_teams()
 
-    if data.team_id in teams:
-        teams[data.team_id]["tab_switches"] = data.count
-        save_teams(teams)
+    if team_id not in teams:
+        return {"status": "invalid team"}
 
-    return {"status": "ok"}
+    
+    if teams[team_id].get("is_finished"):
+        return {"status": "ignored (finished)"}
+
+    
+    teams[team_id]["tab_switches"] = teams[team_id].get("tab_switches", 0) + 1
+
+    save_teams(teams)
+
+    return {"status": "incremented"}
 
 from fastapi.responses import FileResponse
 from reportlab.lib.pagesizes import A4
@@ -71,6 +81,8 @@ def export_pdf():
     file_path = "reports/TechHunt_Event_Report.pdf"
 
     c = canvas.Canvas(file_path, pagesize=A4)
+    IST = timezone(timedelta(hours=5, minutes=30))
+    now_ist = datetime.now(IST)
 
     # ===== PDF METADATA =====
     c.setTitle("TechHunt Event Report")
@@ -91,7 +103,7 @@ def export_pdf():
     c.drawCentredString(
         width / 2,
         y,
-        f"Generated on {datetime.now().strftime('%d %b %Y, %I:%M %p (IST)')}"
+        f"Generated on {now_ist.strftime('%d %b %Y, %I:%M %p (IST)')}"
     )
     c.setFillColor(colors.black)
     y -= 40

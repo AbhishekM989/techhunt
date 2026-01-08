@@ -17,9 +17,13 @@ async function login() {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/login?team_id=${teamId}`, {
-      method: "POST"
-    });
+    const teamId = document.getElementById("teamId").value.trim();
+
+    const url = `${API_BASE}/login?team_id=${encodeURIComponent(teamId)}`;
+
+    const res = await fetch(url, {
+    method: "POST"
+});
 
     const data = await res.json();
 

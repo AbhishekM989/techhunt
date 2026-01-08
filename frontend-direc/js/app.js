@@ -6,40 +6,37 @@ document.addEventListener("paste", e => e.preventDefault());
 
 if (window.location.pathname.includes("game.html")) {
 
-  let tabSwitchCount = Number(localStorage.getItem("tab_switches")) || 0;
   let hiddenAt = null;
 
   document.addEventListener("visibilitychange", () => {
 
     if (document.hidden) {
       hiddenAt = Date.now();
-    } 
-    else {
-      // tab became visible again
-      if (!hiddenAt) return;
-
-      const timeAway = (Date.now() - hiddenAt) / 1000; // seconds
-      hiddenAt = null;
-
-      /*
-        COUNT ONLY IF:
-        - user returns within 15 seconds
-        - implies quick lookup / cheating
-      */
-      if (timeAway <= 15) {
-        tabSwitchCount++;
-        localStorage.setItem("tab_switches", tabSwitchCount);
-
-        fetch(`${API_BASE}/admin/track-tab-switch`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            team_id: localStorage.getItem("team_id"),
-            count: tabSwitchCount
-          })
-        }).catch(() => {});
-      }
+      return;
     }
+
+    
+    if (!hiddenAt) return;
+
+    const timeAway = (Date.now() - hiddenAt) / 1000;
+    hiddenAt = null;
+
+    /*
+      Count ONLY:
+      - quick returns (≤ 15 sec)
+      - avoids QR-scan false positives
+    */
+    if (timeAway <= 15) {
+
+      fetch(`${API_BASE}/admin/track-tab-switch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          team_id: localStorage.getItem("team_id")
+        })
+      }).catch(() => {});
+    }
+
   });
 
 }
