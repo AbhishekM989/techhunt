@@ -35,6 +35,10 @@ function calculateDuration(startUTC, endUTC) {
     .padStart(2, "0")}m ${secs.toString().padStart(2, "0")}s`;
 }
 
+const loader = document.getElementById("backendLoader");
+let backendReady = false;
+const toast = document.getElementById("backendToast");
+
 const tabs = document.querySelectorAll(".admin-tabs .tab");
 
 tabs.forEach(tab => {
@@ -51,8 +55,26 @@ const table = document.getElementById("adminTable");
 
 async function loadTeams() {
   try {
-    const res = await fetch(`${API_BASE}/admin/teams`);
+    const res = await fetch(`${API_BASE}/admin/teams`, {
+      cache: "no-store"
+    });
+
+    if (!res.ok) throw new Error("Backend not ready");
+
     const teams = await res.json();
+
+    
+    if (!backendReady) {
+      backendReady = true;
+      loader.classList.add("fade-out");
+
+      setTimeout(() => {
+      loader.style.display = "none";
+      loader.classList.remove("fade-out");
+},    600);
+
+setTimeout(showBackendLiveToast, 400);
+    }
 
     table.innerHTML = "";
 
@@ -70,20 +92,21 @@ async function loadTeams() {
         <td>${calculateDuration(team.start_time, team.end_time)}</td>
         <td>${team.tab_switches ?? 0}</td>
         <td class="status-${team.status}">
-        ${team.status.toUpperCase()}
+          ${team.status.toUpperCase()}
         </td>
-`;
+      `;
 
       table.appendChild(row);
     });
 
-    
+    lastUpdatedTime = Date.now();
+    updateLastUpdatedText();
 
   } catch (err) {
-    console.error("Admin fetch error:", err);
+    // ❄️ Backend sleeping / network issue
+    loader.style.display = "flex";
+    backendReady = false;
   }
-  lastUpdatedTime = Date.now();
-    updateLastUpdatedText();
 }
 
 function updateLastUpdatedText() {
@@ -98,3 +121,13 @@ setInterval(updateLastUpdatedText, 1000);
 
 loadTeams();
 setInterval(loadTeams, 5000);
+
+function showBackendLiveToast() {
+  if (!toast) return;
+
+  toast.classList.add("show");
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+  }, 2500);
+}
