@@ -1,3 +1,8 @@
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("copy", e => e.preventDefault());
+document.addEventListener("cut", e => e.preventDefault());
+document.addEventListener("paste", e => e.preventDefault());
+
 function formatToIST(utcString) {
   if (!utcString) return "-";
 
@@ -35,6 +40,11 @@ function calculateDuration(startUTC, endUTC) {
     .padStart(2, "0")}m ${secs.toString().padStart(2, "0")}s`;
 }
 
+const loaderTimerEl = document.getElementById("loaderTimer");
+
+let loaderStartTime = null;
+let loaderInterval = null;
+
 const loader = document.getElementById("backendLoader");
 let backendReady = false;
 const toast = document.getElementById("backendToast");
@@ -62,6 +72,12 @@ async function loadTeams() {
     if (!res.ok) throw new Error("Backend not ready");
 
     const teams = await res.json();
+
+    if (loaderInterval) {
+    clearInterval(loaderInterval);
+    loaderInterval = null;
+    loaderStartTime = null;
+}
 
     
     if (!backendReady) {
@@ -103,9 +119,19 @@ setTimeout(showBackendLiveToast, 400);
     updateLastUpdatedText();
 
   } catch (err) {
-    // ❄️ Backend sleeping / network issue
     loader.style.display = "flex";
     backendReady = false;
+
+     if (!loaderStartTime) {
+    loaderStartTime = Date.now();
+
+    loaderInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - loaderStartTime) / 1000);
+      if (loaderTimerEl) {
+        loaderTimerEl.textContent = `Time Elapsed : ${elapsed}s`;
+      }
+    }, 1000);
+    }
   }
 }
 

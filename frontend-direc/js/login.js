@@ -1,3 +1,7 @@
+document.addEventListener("contextmenu", e => e.preventDefault());
+document.addEventListener("copy", e => e.preventDefault());
+document.addEventListener("cut", e => e.preventDefault());
+document.addEventListener("paste", e => e.preventDefault());
 
 if (localStorage.getItem("team_id")) {
   window.location.replace("game.html");
